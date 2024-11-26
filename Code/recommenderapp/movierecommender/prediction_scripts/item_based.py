@@ -2,6 +2,9 @@ import pandas as pd
 import warnings
 import os
 
+from movierecommender import app, db
+from movierecommender.models import Movie
+
 app_dir = os.path.dirname(os.path.abspath(__file__))
 code_dir = os.path.dirname(app_dir)
 project_dir = os.path.dirname(code_dir)
@@ -10,8 +13,16 @@ warnings.filterwarnings("ignore")
 
 
 def recommendForNewUser(user_rating):
-    ratings = pd.read_csv(code_dir + "/data/ratings.csv")
-    movies = pd.read_csv(code_dir + "/data/movies.csv")
+    movies = Movie.query.all()
+    movies_list = [[movie.id, movie.title, movie.genres] for movie in movies]
+    df = pd.DataFrame(movies_list)
+    df.columns = ['movieId', 'title', 'genres']
+
+    ratings = Movie.query.all()
+    ratings_list = [[rating.userId, rating.movieId, rating.rating, rating.timestamp] for rating in ratings]
+    df = pd.DataFrame(ratings_list)
+    df.columns = ['userId', 'movieId', 'rating', 'timestamp'] 
+
     user = pd.DataFrame(user_rating)
     userMovieID = movies[movies["title"].isin(user["title"])]
     userRatings = pd.merge(userMovieID, user)

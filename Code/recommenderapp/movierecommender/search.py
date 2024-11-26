@@ -14,9 +14,6 @@ project_dir = os.path.dirname(code_dir)
 
 
 class Search:
-
-    df = pd.read_csv(code_dir + "/movierecommender/data/movies.csv")
-    
     movies = Movie.query.all()
     movies_list = [[movie.id, movie.title, movie.genres] for movie in movies]
     df = pd.DataFrame(movies_list)

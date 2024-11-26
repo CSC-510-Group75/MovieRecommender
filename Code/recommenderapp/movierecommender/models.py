@@ -54,6 +54,13 @@ class Movie(db.Model):
     title = db.Column(db.String(100), nullable=True)
     genres =  db.Column(db.String(100), nullable=True)
 
+class Rating(db.Model):
+    __tablename__ = 'ratings'
+    userId = db.Column(db.Integer, primary_key=True)
+    movieId = db.Column(db.Integer, nullable = True)
+    rating = db.Column(db.String(100), nullable=True)
+    timestamp =  db.Column(db.String(100), nullable=True)
+
 
 class MovieLikes(db.Model):
     __tablename__ = 'movie_likes'

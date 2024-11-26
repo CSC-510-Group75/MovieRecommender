@@ -1,5 +1,5 @@
 from movierecommender import db
-from movierecommender.models import User,Post,WishlistItem, Watched, MovieLikes, Movie
+from movierecommender.models import User,Post,WishlistItem, Watched, MovieLikes, Movie, Rating
 import csv
 
 db.create_all()

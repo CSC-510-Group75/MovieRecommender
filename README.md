@@ -184,6 +184,13 @@ JavaScript is a versatile and widely used programming language for adding intera
 ## Usage
 1. `cd Code/recommenderapp`
 2. `python3 app.py`
+
+## Running with Docker
+Given you have Docker installed and are running an engine, build the Docker image with the following command in the root directory:
+1. `docker build -t movie-recommender-app`
+
+Run the container with the following command:
+1. `docker run 5000:5001 movie-recommender-app`
    
 ## Documentation 📚
 Refer to Wiki page [here](https://github.com/SE-Fall2024/MovieRecommender/wiki/Documentation)

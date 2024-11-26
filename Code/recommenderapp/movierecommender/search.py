@@ -1,7 +1,9 @@
 import pandas as pd
 
 # from app import app
-from movierecommender import app
+from movierecommender import app, db
+from movierecommender.models import Movie
+
 from flask import jsonify, request, render_template
 import sys
 import os
@@ -14,6 +16,11 @@ project_dir = os.path.dirname(code_dir)
 class Search:
 
     df = pd.read_csv(code_dir + "/movierecommender/data/movies.csv")
+    
+    movies = Movie.query.all()
+    movies_list = [[movie.id, movie.title, movie.genres] for movie in movies]
+    df = pd.DataFrame(movies_list)
+    df.columns = ['movieId', 'title', 'genres'] 
 
     def __init__(self):
         pass

@@ -51,8 +51,8 @@ class Watched(db.Model):
 class Movie(db.Model):
     __tablename__ = 'movies'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    genres =  db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(100), nullable=True)
+    genres =  db.Column(db.String(100), nullable=True)
 
 
 class MovieLikes(db.Model):

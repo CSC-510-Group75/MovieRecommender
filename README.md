@@ -187,7 +187,7 @@ JavaScript is a versatile and widely used programming language for adding intera
 
 ## Running with Docker
 Given you have Docker installed and are running an engine, build the Docker image with the following command in the root directory:
-1. `docker build -t movie-recommender-app`
+1. `docker build -t movie-recommender-app .`
 
 Run the container with the following command:
 1. `docker run 5000:5001 movie-recommender-app`
@@ -195,6 +195,16 @@ Run the container with the following command:
 ## Running with Docker-Compose
 Given you have Docker installed and are running an engine, use the following command to build and run the application. Any changes made to the app while this is running will be reflected in the site without needing to rebuild.
 1. `docker-compose up --build`
+
+## Deploying to Kubernetes
+Build docker image with the following command:
+1. `docker build -t movie-recommender-app:latest .`
+Apply yaml configuration to Kubernetes cluster:
+2. `kubectl apply -f flask-app.yaml`
+Verify resources are created:
+3. `kubectl get all`
+Access app using external IP address:
+4.`kubectl get service flask-app-service`
    
 ## Documentation 📚
 Refer to Wiki page [here](https://github.com/SE-Fall2024/MovieRecommender/wiki/Documentation)

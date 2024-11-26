@@ -191,6 +191,10 @@ Given you have Docker installed and are running an engine, build the Docker imag
 
 Run the container with the following command:
 1. `docker run 5000:5001 movie-recommender-app`
+
+## Running with Docker-Compose
+Given you have Docker installed and are running an engine, use the following command to build and run the application. Any changes made to the app while this is running will be reflected in the site without needing to rebuild.
+1. `docker-compose up --build`
    
 ## Documentation 📚
 Refer to Wiki page [here](https://github.com/SE-Fall2024/MovieRecommender/wiki/Documentation)

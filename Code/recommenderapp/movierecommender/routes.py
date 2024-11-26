@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 from movierecommender import app,db, bcrypt
 from movierecommender.forms import RegistrationForm, LoginForm
 from flask_login import login_user, current_user, logout_user, login_required
-from movierecommender.models import User, Post, WishlistItem, Watched, MovieLikes
+from movierecommender.models import User, Post, WishlistItem, Watched, MovieLikes, Movie
 import json
 import sys
 import csv
@@ -221,17 +221,10 @@ def success():
 
 @app.route('/api/movies', methods=['GET'])
 def get_movies():
-    movies = []
-    with open('movierecommender/data/movies.csv', mode='r', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        next(reader)  # Skip the header
-        for row in reader:
-            if len(row) > 1:  # Check if there's a title in the second column
-                movies.append(row[1])  # Assuming titles are in the second column
+    movies = Movie.query.all()
+    movie_titles = [movie.title for movie in movies]
 
-    # num_random_movies = 5  
-    # random_movies = random.sample(movies, min(num_random_movies, len(movies)))
-    return jsonify(movies)
+    return jsonify(movie_titles)
 
 @app.route('/api/movie_details', methods=['GET'])
 def movie_details():

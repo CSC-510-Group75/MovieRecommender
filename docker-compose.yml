@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5001"
+    volumes:
+      - ./Code/recommenderapp:/app/Code/recommenderapp
+    command: python app.py

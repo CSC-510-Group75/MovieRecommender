@@ -1,332 +1,43 @@
-<!--Group49-->
-{% extends "layout.html" %} {% block content %}
-<div class="movie-container">
-  <div class="movie-content">
-    <div class="movie-image-container">
-      <img
-        src="{{ movie.Poster }}"
-        alt="{{ movie.Title }} Poster"
-        class="movie-image"
-      />
+<!-- MovieRecommender/movierecommender/templates/movie_detail.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Your existing head content -->
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Existing movie details -->
+        <h1>{{ movie.title }}</h1>
+        <p>{{ movie.description }}</p>
+        <!-- Other movie details -->
+
+        <!-- Wishlist Button -->
+        {% if current_user.is_authenticated %}
+            {% set in_wishlist = False %}
+            {% for item in current_user.wishlist %}
+                {% if item.movie_id == movie.id %}
+                    {% set in_wishlist = True %}
+                    {% break %}
+                {% endif %}
+            {% endfor %}
+            
+            {% if in_wishlist %}
+                <form action="{{ url_for('remove_from_wishlist', movie_id=movie.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Remove from Wishlist</button>
+                </form>
+            {% else %}
+                <form action="{{ url_for('add_to_wishlist', movie_id=movie.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary">Add to Wishlist</button>
+                </form>
+            {% endif %}
+        {% else %}
+            <p><a href="{{ url_for('login') }}">Log in</a> to manage your wishlist.</p>
+        {% endif %}
+
+        <!-- Existing comments or other sections -->
     </div>
-    <div class="movie-details">
-      <h1>{{ movie.Title }}</h1>
-      <!-- <h2>Rating: {{ movie.Rated }}</h2> -->
-      <div class="detail-box">
-        <p><strong>Release Date:</strong> {{ movie.Released }}</p>
-        <p><strong>Runtime:</strong> {{ movie.Runtime }}</p>
-      </div>
-      <div class="detail-box">
-        <p><strong>Genre:</strong> {{ movie.Genre }}</p>
-        <p><strong>Director:</strong> {{ movie.Director }}</p>
-      </div>
-      <div class="detail-box">
-        <p><strong>Writer:</strong> {{ movie.Writer }}</p>
-        <p><strong>Actors:</strong> {{ movie.Actors }}</p>
-      </div>
-      <div class="detail-box">
-        <p><strong>Plot:</strong> {{ movie.Plot }}</p>
-      </div>
-      <div class="detail-box">
-        <p><strong>Language:</strong> {{ movie.Language }}</p>
-        <p><strong>Country:</strong> {{ movie.Country }}</p>
-      </div>
-      <div class="detail-box">
-        <p><strong>Awards:</strong> {{ movie.Awards }}</p>
-      </div>
-
-      <div class="ratings">
-        <h3>Ratings:</h3>
-        <ul>
-          {% for rating in movie.Ratings %}
-          <li><strong>{{ rating.Source }}:</strong> {{ rating.Value }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <p><strong>IMDb Rating:</strong> {{ movie.imdbRating }}</p>
-      <p><strong>IMDb Votes:</strong> {{ movie.imdbVotes }}</p>
-    </div>
-  </div>
-
-  <div class="action-buttons">
-    <div class="left-buttons">
-
-
-      <div class="movie">
-        <button onclick="likeMovie('{{movie.Title}}')">👍</button>
-        <span id="like">0</span>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function likeMovie(movieTitle) {
-          console.log(movieTitle)
-            $.ajax({
-                url: '/like_movie',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({movie_title: movieTitle}),
-                success: function(data) {
-                    // Update the like count for the specific movie title in the UI
-                    console.log(data)
-                    const likeCountElement = document.getElementById('like');
-                    if (likeCountElement) {
-                        
-                        likeCountElement.innerText = data.new_like_count;
-                    }
-                },
-                error: function(error) {
-                    console.error('Error:', error);
-                }
-            });
-        }
-    </script>
-
-
-
-
-
-
-
-      <!-- <div class="button-container">
-        <button class="like-button" title="Like">👍</button>
-      </div> -->
-      <div class="button-container">
-        <button class="dislike-button" title="Dislike">👎</button>
-      </div>
-    </div>
-    <div class="center-button">
-      <div class="button-container">
-        <button class="back-button" title="Back" onclick="goBack()">⬅️</button>
-      </div>
-    </div>
-    <div class="right-buttons">
-      <div class="button-container">
-          <button class="wishlist-button" data-movie-title="{{ movie.Title }}" title="Add to Wishlist">❤️</button>
-      </div>
-  </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var buttons = document.querySelectorAll('.wishlist-button'); // Select all wishlist buttons
-
-      buttons.forEach(function(button) {
-          button.addEventListener('click', function(event) {
-              event.preventDefault();  // Prevent the default form submission
-
-              var movieTitle = this.getAttribute('data-movie-title');  // Use a data attribute for the title
-
-              fetch(`/api/add_to_wishlist/${encodeURIComponent(movieTitle)}`, {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json'
-                  }
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.success) {  // Adjusted to check for string response
-                      alert("Added to wishlist!"); // Notify user that the movie was added
-                  } else {
-                      alert(data.error); // Notify user of error
-                  }
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-                  alert("An error occurred"); // Notify user of error
-              });
-          });
-      });
-  });
-
-
-  </script>
-
-      <div class="button-container">
-        <button class="watched-button" data-movie-title="{{ movie.Title }}" title="Watched">👁️</button>
-      </div>
-    </div>
-  </div>
-</div>
-<script>
-
-    document.addEventListener("DOMContentLoaded", function() {
-      var buttons = document.querySelectorAll('.watched-button'); // Select all wishlist buttons
-
-      buttons.forEach(function(button) {
-          button.addEventListener('click', function(event) {
-              event.preventDefault();  // Prevent the default form submission
-
-              var movieTitle = this.getAttribute('data-movie-title');  // Use a data attribute for the title
-
-              fetch(`/api/add_to_watched/${encodeURIComponent(movieTitle)}`, {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json'
-                  }
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.success) {  // Adjusted to check for string response
-                      alert("Added to watched history!"); // Notify user that the movie was added
-                  } else {
-                      alert(data.error); // Notify user of error
-                  }
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-                  alert("An error occurred"); // Notify user of error
-              });
-          });
-      });
-  });
-
-
-
-</script>
-<script>
-  function goBack() {
-    // Use the browser's history to navigate back
-    window.history.back();
-  }
-</script>
-
-<style>
-  /* Ensure full page background from layout */
-  html,
-  body {
-    height: 100%;
-    overflow-y: scroll;
-  }
-  body::before {
-    content: "";
-    background: url("your-background-image.jpg") no-repeat center center fixed;
-    background-size: cover;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-  }
-
-  /* Main container */
-  .movie-container {
-    max-width: 900px;
-    padding: 20px;
-    margin: 20px;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 8px;
-  }
-
-  /* Layout adjustments */
-  .movie-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  .movie-image-container {
-    flex: 1;
-    min-width: 250px;
-  }
-  .movie-image {
-    width: 100%;
-    border-radius: 8px;
-  }
-  .movie-details {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  /* Headings */
-  h1,
-  h2,
-  h3 {
-    color: #ffeb3b;
-  }
-  h1 {
-    font-size: 2em;
-  }
-
-  /* Detail boxes */
-  .detail-box {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 10px;
-    border-radius: 5px;
-  }
-
-  /* Ratings list */
-  .ratings ul {
-    list-style: none;
-    padding: 0;
-  }
-  .ratings ul li {
-    margin: 5px 0;
-    color: #f1f1f1;
-  }
-
-  /* Action buttons */
-  .action-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  .left-buttons,
-  .right-buttons {
-    display: flex;
-    gap: 20px;
-  }
-  .center-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .button-container {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 10px;
-    border-radius: 5px;
-    transition: background 0.3s;
-  }
-  .button-container:hover {
-    background: rgba(255, 255, 255, 0.5);
-  }
-  .action-buttons button {
-    border: none;
-    font-size: 1.5em;
-    background: transparent;
-    cursor: pointer;
-    position: relative;
-  }
-  .action-buttons button:hover::after {
-    content: attr(title);
-    position: absolute;
-    bottom: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 5px;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
-
-  /* Button colors */
-  .like-button {
-    color: #4caf50; /* Green for Like */
-  }
-  .dislike-button {
-    color: #f44336; /* Red for Dislike */
-  }
-  .watched-button {
-    color: #2196f3; /* Blue for Watched */
-  }
-  .wishlist-button {
-    color: #e91e63; /* Pink for Wishlist */
-  }
-  .back-button {
-    color: #ffc107; /* Amber for Back */
-  }
-</style>
-{% endblock content %}
+    
+    <!-- Your existing footer or scripts -->
+</body>
+</html>

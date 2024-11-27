@@ -63,6 +63,44 @@ def get_movie_info1(title):
 @app.route("/home")
 def landing_page():
     return render_template("landing_page.html")
+    
+# MovieRecommender/movierecommender/routes.py
+
+@app.route('/wishlist/remove/<int:movie_id>', methods=['POST'])
+@login_required
+def remove_from_wishlist(movie_id):
+    wishlist_entry = Wishlist.query.filter_by(user_id=current_user.id, movie_id=movie_id).first()
+    if wishlist_entry:
+        db.session.delete(wishlist_entry)
+        db.session.commit()
+        flash('Movie has been removed from your wishlist.', 'success')
+    else:
+        flash('Movie not found in your wishlist.', 'warning')
+    return redirect(url_for('wishlist'))
+
+# MovieRecommender/movierecommender/routes.py
+
+@app.route('/wishlist/add/<int:movie_id>', methods=['POST'])
+@login_required
+def add_to_wishlist(movie_id):
+    movie = Movie.query.get_or_404(movie_id)
+    existing_entry = Wishlist.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()
+    if existing_entry:
+        flash('Movie is already in your wishlist.', 'info')
+    else:
+        new_entry = Wishlist(user_id=current_user.id, movie_id=movie.id)
+        db.session.add(new_entry)
+        db.session.commit()
+        flash('Movie added to your wishlist!', 'success')
+    return redirect(request.referrer or url_for('home'))
+
+
+    
+@app.route('/wishlist')
+@login_required
+def wishlist():
+    wishlist_items = Wishlist.query.filter_by(user_id=current_user.id).join(Movie).all()
+    return render_template('wishlist.html', wishlist_items=wishlist_items)
 
 @app.route("/", methods=['GET','POST'])
 def register():

@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from movierecommender import db , login_manager
 from flask_login import UserMixin
@@ -53,6 +52,23 @@ class WishlistItem(db.Model):
 
     def __repr__(self):
         return f"WishlistItem('{self.title}', '{self.user_id}')"
+        
+        
+class Wishlist(db.Model):
+    __tablename__ = 'wishlist'
+    id = db.Column(db.Integer, primary_key=True)
+    added_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Foreign Keys
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
+    
+    # Relationships
+    user = db.relationship('User', backref=db.backref('wishlist', lazy=True))
+    movie = db.relationship('Movie', backref=db.backref('wishlisted_by', lazy=True))
+    
+    def __repr__(self):
+        return f'<Wishlist {self.id} - User {self.user_id} - Movie {self.movie_id}>'
 
 #Group 49
 class Watched(db.Model):
@@ -85,8 +101,3 @@ class MovieLikes(db.Model):
 
     def __repr__(self):
         return f"MovieLikes('{self.movie_id}', '{self.like_count}')"
-
-
-
-
-

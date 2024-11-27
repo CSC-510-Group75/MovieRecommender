@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 from movierecommender import app,db, bcrypt
 from movierecommender.forms import RegistrationForm, LoginForm
 from flask_login import login_user, current_user, logout_user, login_required
-from movierecommender.models import User, Post, WishlistItem, Watched, MovieLikes, Movie
+from movierecommender.models import User, Post, WishlistItem, Watched, MovieLikes
 import json
 import sys
 import pyotp

@@ -1,14 +1,20 @@
-from flask import render_template,url_for,flash,redirect,jsonify,request
+from flask import render_template,url_for,flash,redirect,jsonify,request,session
 from flask_cors import CORS, cross_origin
 from movierecommender import app,db, bcrypt
 from movierecommender.forms import RegistrationForm, LoginForm
 from flask_login import login_user, current_user, logout_user, login_required
-from movierecommender.models import User, Post, WishlistItem, Watched, MovieLikes, Movie
+from movierecommender.models import User, Post, WishlistItem, Watched, MovieLikes
 import json
 import sys
+import pyotp
+import qrcode
+import io
+import base64
 import csv
 import time
 import requests
+from flask import render_template, redirect, url_for, flash, session
+from flask_login import login_required, current_user
 from movierecommender.prediction_scripts.item_based import recommendForNewUser
 from movierecommender.search import Search
 import random
@@ -71,20 +77,51 @@ def register():
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
-@app.route("/login", methods=['GET', 'POST'])
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('landing_page'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('landing_page'))
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.verify_password(password):  # Adjust password verification as per your implementation
+            session['pre_2fa_user_id'] = user.id
+            if user.two_factor_enabled:
+                return redirect(url_for('two_factor'))
+            login_user(user)  # Adjust according to your login mechanism
+            flash('Logged in successfully.', 'success')
+            return redirect(url_for('dashboard'))  # Adjust redirect as needed
         else:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
-    return render_template('login.html', title='Login', form=form)
+            flash('Invalid username or password.', 'danger')
+
+    return render_template('login.html')
+
+@app.route('/two_factor', methods=['GET', 'POST'])
+def two_factor():
+    user_id = session.get('pre_2fa_user_id')
+    if not user_id:
+        flash('Session expired. Please log in again.', 'danger')
+        return redirect(url_for('login'))
+
+    user = User.query.get(user_id)
+    if not user or not user.two_factor_enabled:
+        flash('Invalid session. Please log in again.', 'danger')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        token = request.form.get('token')
+        totp = pyotp.TOTP(user.two_factor_secret)
+        if totp.verify(token):
+            login_user(user)  # Adjust according to your login mechanism
+            session.pop('pre_2fa_user_id', None)
+            flash('Logged in successfully with 2FA.', 'success')
+            return redirect(url_for('dashboard'))  # Adjust redirect as needed
+        else:
+            flash('Invalid 2FA token. Please try again.', 'danger')
+
+    return render_template('two_factor.html')
+
 @app.route("/logout")
 def logout():
     logout_user()
@@ -221,10 +258,17 @@ def success():
 
 @app.route('/api/movies', methods=['GET'])
 def get_movies():
-    movies = Movie.query.all()
-    movie_titles = [movie.title for movie in movies]
+    movies = []
+    with open('movierecommender/data/movies.csv', mode='r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip the header
+        for row in reader:
+            if len(row) > 1:  # Check if there's a title in the second column
+                movies.append(row[1])  # Assuming titles are in the second column
 
-    return jsonify(movie_titles)
+    # num_random_movies = 5  
+    # random_movies = random.sample(movies, min(num_random_movies, len(movies)))
+    return jsonify(movies)
 
 @app.route('/api/movie_details', methods=['GET'])
 def movie_details():
@@ -364,3 +408,42 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
+@app.route('/enable_2fa', methods=['GET', 'POST'])
+@login_required
+def enable_2fa():
+    if current_user.two_factor_enabled:
+        flash('2FA is already enabled for your account.', 'info')
+        return redirect(url_for('profile'))  # Adjust the redirect as needed
+
+    if request.method == 'POST':
+        token = request.form.get('token')
+        if not token:
+            flash('Please enter the 2FA token.', 'danger')
+            return redirect(url_for('enable_2fa'))
+
+        totp = pyotp.TOTP(session['two_factor_secret'])
+        if totp.verify(token):
+            current_user.two_factor_enabled = True
+            db.session.commit()
+            flash('Two-Factor Authentication has been enabled.', 'success')
+            return redirect(url_for('profile'))  # Adjust the redirect as needed
+        else:
+            flash('Invalid 2FA token. Please try again.', 'danger')
+            return redirect(url_for('enable_2fa'))
+
+    # Generate a new secret
+    secret = pyotp.random_base32()
+    session['two_factor_secret'] = secret
+    totp = pyotp.TOTP(secret)
+    uri = totp.provisioning_uri(name=current_user.email, issuer_name="MovieRecommender")
+    
+    # Generate QR code
+    qr = qrcode.QRCode(box_size=10, border=5)
+    qr.add_data(uri)
+    qr.make(fit=True)
+    img = qr.make_image(fill='black', back_color='white')
+    buf = io.BytesIO()
+    img.save(buf)
+    image_base64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+    return render_template('enable_2fa.html', qr_code=image_base64, secret=secret)

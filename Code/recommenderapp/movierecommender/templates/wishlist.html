@@ -1,67 +1,60 @@
-<!--Group49-->
-{% extends "layout.html" %}
+<!-- MovieRecommender/movierecommender/templates/wishlist.html -->
 
-{% block content %}
-<div class="content-section">
-  <h1 class="account-heading" style="color: white">Wishlist</h1>
-
-  <!-- Movie Grid -->
-  <div class="movie-grid">
-    {% for movie in wishlist_movies %}
-    <div class="individual-movie-card">
-      <!-- Display Movie Poster -->
-      <img
-        src="{{ movie.Poster if movie.Poster else '/static/images/default_poster.jpg' }}"
-        alt="{{ movie.title }} Poster"
-        class="article-img"
-        onerror="this.onerror=null;this.src='/static/images/default_poster.jpg';" />
-
-      <!-- Movie Title -->
-      <h4 class="article-title">{{ movie.title }}</h4>
-
-      <!-- Movie Details -->
-      <p class="article-content"><strong>Genre:</strong> {{ movie.Genre }}</p>
-      <p class="article-content"><strong>Director:</strong> {{ movie.Director }}</p>
-      <p class="article-content"><strong>IMDb Rating:</strong> {{ movie.imdbRating }}</p>
-      <p class="article-content"><strong>Added on:</strong> {{ movie.added_on.strftime('%Y-%m-%d') }}</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Wishlist</title>
+    <!-- Include Bootstrap CSS or your preferred styling framework -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Your Wishlist</h1>
+        <hr>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        
+        {% if wishlist_items %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Movie Title</th>
+                        <th>Added On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in wishlist_items %}
+                        <tr>
+                            <td>{{ item.movie.title }}</td>
+                            <td>{{ item.added_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <form action="{{ url_for('remove_from_wishlist', movie_id=item.movie.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You have no movies in your wishlist.</p>
+        {% endif %}
+        
+        <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
     </div>
-    {% endfor %}
-  </div>
-</div>
-
-<!-- CSS styling for movie cards -->
-<style>
-  .movie-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; /* Space between movie cards */
-  }
-
-  .individual-movie-card {
-    background-color: white;
-    color: black;
-    border-radius: 8px;
-    padding: 15px;
-    width: 250px; /* Adjust as needed */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-
-  .article-img {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-  }
-
-  .article-title {
-    font-size: 1.5rem;
-    margin-top: 10px;
-    color: black;
-  }
-
-  .article-content {
-    font-size: 1rem;
-    margin: 5px 0;
-  }
-</style>
-
-{% endblock %}
+    
+    <!-- Include Bootstrap JS or your preferred JavaScript framework -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

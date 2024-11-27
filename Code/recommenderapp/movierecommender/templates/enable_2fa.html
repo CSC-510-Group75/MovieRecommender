@@ -1,1 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enable Two-Factor Authentication</title>
+</head>
+<body>
+    <h2>Enable Two-Factor Authentication</h2>
+    <p>Scan the QR code below with your authenticator app (e.g., Google Authenticator), then enter the generated token to confirm.</p>
+    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+    <p>If you cannot scan the QR code, you can enter this secret manually: <strong>{{ secret }}</strong></p>
+    <form method="POST">
+        <label for="token">Enter 2FA Token:</label>
+        <input type="text" id="token" name="token" required>
+        <button type="submit">Enable 2FA</button>
+    </form>
+</body>
+</html>
 

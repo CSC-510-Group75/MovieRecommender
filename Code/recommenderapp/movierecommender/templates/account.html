@@ -15,6 +15,7 @@
       background-color: #333;
       border-radius: 8px;
       box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+      width: 400px; /* Added width for better layout */
     "
   >
     <h1 style="color: #f9f9f9; font-size: 2.5em; margin-bottom: 15px">
@@ -26,30 +27,66 @@
     <p style="color: #bbb; font-size: 1.1em; margin-bottom: 25px">
       Account Details:
     </p>
-    <div style="color: #f9f9f9; text-align: left; font-size: 1.2em">
+    <div style="color: #f9f9f9; text-align: left; font-size: 1.2em; margin-bottom: 25px;">
       <p><strong>Username:</strong> {{ current_user.username }}</p>
       <p><strong>Email:</strong> {{ current_user.email }}</p>
     </div>
-    <a href="/">  <button
-      style="
-        background-color: #555;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        font-size: 1em;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 20px;
-      "
-    >
-      Back
-    </button>
-  </a>
+
+    <!-- Begin Security Settings Section -->
+    <div style="color: #f9f9f9; text-align: left; font-size: 1.2em;">
+      <h4>Security Settings</h4>
+      {% if current_user.two_factor_enabled %}
+          <form method="POST" action="{{ url_for('disable_2fa') }}">
+              <button type="submit" class="btn btn-danger" style="
+                  background-color: #c82333;
+                  color: white;
+                  border: none;
+                  padding: 10px 20px;
+                  text-align: center;
+                  text-decoration: none;
+                  font-size: 1em;
+                  border-radius: 5px;
+                  cursor: pointer;
+                  margin-top: 10px;
+              ">Disable Two-Factor Authentication</button>
+          </form>
+      {% else %}
+          <a href="{{ url_for('enable_2fa') }}" class="btn btn-primary" style="
+              background-color: #007bff;
+              color: white;
+              border: none;
+              padding: 10px 20px;
+              text-align: center;
+              text-decoration: none;
+              font-size: 1em;
+              border-radius: 5px;
+              cursor: pointer;
+              margin-top: 10px;
+              display: inline-block;
+          ">Enable Two-Factor Authentication</a>
+      {% endif %}
+    </div>
+    <!-- End Security Settings Section -->
+
+    <a href="/">  
+      <button
+        style="
+          background-color: #555;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          font-size: 1em;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 20px;
+        "
+      >
+        Back
+      </button>
+    </a>
   </div>
   
 </div>
-
-
 {% endblock content %}

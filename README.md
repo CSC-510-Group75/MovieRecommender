@@ -5,16 +5,16 @@
 ![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)
 
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/SE-Fall2024/MovieRecommender)
-![Latest commit](https://img.shields.io/github/last-commit/SE-Fall2024/MovieRecommender)
+![Latest commit](https://img.shields.io/github/last-commit/CSC-510-Group75/MovieRecommender)
 
 
- ![GitHub issues](https://img.shields.io/github/issues-raw/SE-Fall2024/MovieRecommender)
-![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/SE-Fall2024/MovieRecommender)
+ ![GitHub issues](https://img.shields.io/github/issues-raw/CSC-510-Group75/MovieRecommender)
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/CSC-510-Group75/MovieRecommender)
  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)  
 
 [![codecov](https://codecov.io/gh/MadhurDixit13/MovieRecommender/graph/badge.svg?token=9NGWAJ7BST)](https://codecov.io/gh/MadhurDixit13/MovieRecommender)
-[![Code Coverage](https://github.com/SE-Fall2024/MovieRecommender/actions/workflows/codecov.yml/badge.svg)](https://github.com/SE-Fall2024/MovieRecommender/actions/workflows/codecov.yml) 
-![GitHub release (with filter)](https://img.shields.io/github/v/release/SE-Fall2024/MovieRecommender) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/SE-Fall2024/MovieRecommender) 
+[![Code Coverage](https://github.com/SE-CSC-510-Group75/MovieRecommender/actions/workflows/codecov.yml/badge.svg)](https://github.com/SE-Fall2024/MovieRecommender/actions/workflows/codecov.yml) 
+![GitHub release (with filter)](https://img.shields.io/github/v/release/SE-Fall2024/MovieRecommender) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/CSC-510-Group75/MovieRecommender) 
 [![DOI](https://zenodo.org/badge/878926658.svg)](https://doi.org/10.5281/zenodo.14025055)
 
 Are you tired of endless scrolling to find the perfect movie? Movie Match offers an expertly curated collection of must-watch films tailored to your tastes, all in a sleek and user-friendly interface. <br>
